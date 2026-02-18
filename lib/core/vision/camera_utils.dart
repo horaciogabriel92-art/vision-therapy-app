@@ -4,6 +4,7 @@ import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
 import 'package:flutter/foundation.dart';
 
 // Utilidades oficiales de Google ML Kit para convertir CameraImage
+// Actualizado para google_mlkit_face_detection ^0.10.0 (InputImageMetadata)
 class CameraUtils {
   static InputImage? convert(CameraImage image, CameraDescription camera) {
     final WriteBuffer allBytes = WriteBuffer();
@@ -16,22 +17,18 @@ class CameraUtils {
     final InputImageRotation imageRotation = _rotationIntToImageRotation(camera.sensorOrientation);
     final InputImageFormat inputImageFormat = _inputImageFormat(image.format.group);
 
-    final inputImageData = InputImageData(
+    // FIX: InputImageData -> InputImageMetadata
+    final inputImageMetadata = InputImageMetadata(
       size: imageSize,
-      imageRotation: imageRotation,
-      inputImageFormat: inputImageFormat,
-      planeData: image.planes.map(
-        (Plane plane) {
-          return InputImagePlaneMetadata(
-            bytesPerRow: plane.bytesPerRow,
-            height: plane.height,
-            width: plane.width,
-          );
-        },
-      ).toList(),
+      rotation: imageRotation,
+      format: inputImageFormat,
+      bytesPerRow: image.planes[0].bytesPerRow, // Metadata simplificada en nuevas versiones
     );
 
-    return InputImage.fromBytes(bytes: bytes, inputImageData: inputImageData);
+    return InputImage.fromBytes(
+      bytes: bytes, 
+      metadata: inputImageMetadata, // FIX: parameter renamed from inputImageData
+    );
   }
 
   static InputImageRotation _rotationIntToImageRotation(int rotation) {
