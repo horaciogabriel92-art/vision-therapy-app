@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:vision_therapy_app/core/theme/app_theme.dart';
 import 'package:vision_therapy_app/core/vision/vision_service.dart';
 import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class CalibrationScreen extends StatefulWidget {
   const CalibrationScreen({super.key});
@@ -25,6 +26,24 @@ class _CalibrationScreenState extends State<CalibrationScreen> {
   }
 
   void _startCamera() async {
+    // Solicitar permisos en tiempo real (Crucial para Android 6.0+)
+    var status = await Permission.camera.request();
+    
+    if (status.isPermanentlyDenied) {
+        if (!mounted) return;
+        // Si el usuario dijo "No volver a preguntar", lo mandamos a settings
+        openAppSettings();
+        return;
+    }
+
+    if (!status.isGranted) {
+        if (!mounted) return;
+         ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Se necesita cámara para la terapia.")),
+         );
+         return;
+    }
+
     await _vision.initialize();
     _vision.onFaceDetected = (Face face) {
       if (!mounted) return;

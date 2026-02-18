@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:vision_therapy_app/core/theme/app_theme.dart';
 import 'package:vision_therapy_app/features/map/widgets/level_node.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:vision_therapy_app/features/calibration/presentation/calibration_screen.dart';
 
 class SagaMapScreen extends StatefulWidget {
   const SagaMapScreen({super.key});
@@ -84,8 +85,17 @@ class _SagaMapScreenState extends State<SagaMapScreen> {
                       status: lvl['status'],
                       icon: lvl['icon'],
                       onTap: () {
-                        // Navegar al ejercicio
-                        print("Tapped Level ${lvl['level']}");
+                        if (lvl['level'] == 1) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const CalibrationScreen()),
+                          );
+                        } else {
+                          // TODO: Implementar lógica de desbloqueo
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text("Nivel Bloqueado: Completa la calibración primero.")),
+                          );
+                        }
                       },
                     ).animate().fadeIn(duration: 500.ms).slideY(begin: 0.2, end: 0),
                   );
