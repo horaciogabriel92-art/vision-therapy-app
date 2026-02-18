@@ -1,7 +1,7 @@
 name: vision_therapy_app
 description: Professional Vision Therapy App with ML and Dichoptic Training.
 publish_to: 'none'
-version: 1.0.0+1
+version: 1.0.0+2
 
 environment:
   sdk: '>=3.2.0 <4.0.0'
