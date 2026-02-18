@@ -1,4 +1,4 @@
-name: vision_therapy_pro
+name: vision_therapy_app
 description: Professional Vision Therapy App with ML and Dichoptic Training.
 publish_to: 'none'
 version: 1.0.0+1
