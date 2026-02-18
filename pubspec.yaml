@@ -1,0 +1,47 @@
+name: vision_therapy_pro
+description: Professional Vision Therapy App with ML and Dichoptic Training.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.2.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # UI Core
+  cupertino_icons: ^1.0.6
+  google_fonts: ^6.1.0
+  flutter_animate: ^4.5.0 # Animaciones "jugosas" tipo Duolingo
+  percent_indicator: ^4.2.3 # Barras de progreso circulares
+  glassmorphism: ^3.0.0 # UI estilo panel de vidrio futurista
+  dotted_border: ^2.1.0 # Para nodos del mapa
+
+  # State Management
+  provider: ^6.1.1
+  shared_preferences: ^2.2.2 # Configuración simple
+  uuid: ^4.3.3
+
+  # Backend Local
+  sqflite: ^2.3.0 # Base de datos para rachas y XP
+  path: ^1.8.3
+  supabase_flutter: ^2.3.0 # Nube para gráficos y backup
+
+  # Vision & Camera (The "Magic")
+  camera: ^0.10.5+9
+  google_mlkit_face_detection: ^0.10.0 # Standard robusto para landmarks
+
+  # Game Engine (Gravity Catch)
+  flame: ^1.16.0 
+  flame_forge2d: ^0.16.0-1 # Física 2D real 
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/
