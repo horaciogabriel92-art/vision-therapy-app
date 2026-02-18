@@ -25,6 +25,45 @@ class VisionService {
   final VisionAnalyzerService _analyzer = VisionAnalyzerService();
   Function(ClinicalMeasurement)? onMeasurementCalculated;
 
+  CameraController? get cameraController => _cameraController;
+  bool get isInitialized => _cameraController?.value.isInitialized ?? false;
+
+  Future<void> initialize() async {
+    if (_cameraController != null) return;
+
+    try {
+      final cameras = await availableCameras();
+      
+      final frontCamera = cameras.firstWhere(
+        (camera) => camera.lensDirection == CameraLensDirection.front,
+        orElse: () => cameras.first,
+      );
+
+      _cameraController = CameraController(
+        frontCamera,
+        ResolutionPreset.medium,
+        enableAudio: false,
+        imageFormatGroup: ImageFormatGroup.yuv420,
+      );
+
+      await _cameraController!.initialize();
+      _startImageStream();
+      
+    } catch (e) {
+      debugPrint('VisionService Error: $e');
+    }
+  }
+
+  void _startImageStream() {
+    if (_cameraController == null) return;
+
+    _cameraController!.startImageStream((CameraImage image) {
+      if (_isProcessing) return;
+      _isProcessing = true;
+      _processImage(image).then((_) => _isProcessing = false);
+    });
+  }
+
   Future<void> _processImage(CameraImage image) async {
     if (_cameraController == null) return;
     

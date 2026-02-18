@@ -1,6 +1,6 @@
 import 'dart:ui';
 import 'package:camera/camera.dart';
-import 'package:google_mlkit_face_mesh/google_mlkit_face_mesh.dart';
+import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
 import 'package:flutter/foundation.dart';
 
 // Utilidades oficiales de Google ML Kit para convertir CameraImage

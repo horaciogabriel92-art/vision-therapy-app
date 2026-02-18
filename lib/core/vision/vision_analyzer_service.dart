@@ -1,12 +1,13 @@
 import 'dart:math' as math;
+import 'dart:ui';
 import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
 import 'package:vector_math/vector_math_64.dart' as vector;
 
 /// Port of Python's ClinicalMeasurement data class
 class ClinicalMeasurement {
   final int timestamp;
-  final Point<int> leftPupil;
-  final Point<int> rightPupil;
+  final math.Point<int> leftPupil;
+  final math.Point<int> rightPupil;
   final vector.Vector3 leftGazeVector;
   final vector.Vector3 rightGazeVector;
   final double convergenceAngle;
@@ -105,8 +106,8 @@ class VisionAnalyzerService {
 
     return ClinicalMeasurement(
       timestamp: timestamp,
-      leftPupil: Point(leftPupil.x.toInt(), leftPupil.y.toInt()),
-      rightPupil: Point(rightPupil.x.toInt(), rightPupil.y.toInt()),
+      leftPupil: math.Point(leftPupil.x.toInt(), leftPupil.y.toInt()),
+      rightPupil: math.Point(rightPupil.x.toInt(), rightPupil.y.toInt()),
       leftGazeVector: leftGaze,
       rightGazeVector: rightGaze,
       convergenceAngle: convergenceAngle, // To be refined with calibration
@@ -115,7 +116,7 @@ class VisionAnalyzerService {
     );
   }
 
-  vector.Vector3 _calculateCentroid(List<Point<int>> points) {
+  vector.Vector3 _calculateCentroid(List<math.Point<int>> points) {
     if (points.isEmpty) return vector.Vector3.zero();
     double sumX = 0;
     double sumY = 0;

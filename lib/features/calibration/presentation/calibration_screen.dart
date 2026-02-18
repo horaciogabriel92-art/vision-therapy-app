@@ -8,6 +8,8 @@ import 'package:vision_therapy_app/core/vision/vision_analyzer_service.dart';
 import 'dart:async';
 import 'dart:math' as math;
 
+import 'package:flutter_animate/flutter_animate.dart';
+
 class CalibrationScreen extends StatefulWidget {
   const CalibrationScreen({super.key});
 
@@ -120,7 +122,7 @@ class _CalibrationScreenState extends State<CalibrationScreen> with SingleTicker
                       Text("Baseline Convergence: ${avgConv.toStringAsFixed(1)}°", style: const TextStyle(color: Colors.white)),
                       const SizedBox(height: 10),
                       Text(diagnosis, style: TextStyle(
-                          color: diagnosis == "ALIGNED" ? AppTheme.success : AppTheme.danger,
+                          color: diagnosis == "ALIGNED" ? AppTheme.accent : AppTheme.danger,
                           fontWeight: FontWeight.bold,
                           fontSize: 18
                       )),
