@@ -22,7 +22,7 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-          flutter-version: '3.19.0' # Adjust as needed, or remove to use latest
+          flutter-version: '3.27.0' # Upgrade to support Color.withValues and recent Dart features
 
       - name: Get Dependencies
         run: flutter pub get

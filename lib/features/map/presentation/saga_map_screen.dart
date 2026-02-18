@@ -155,5 +155,5 @@ class _MapLinePainter extends CustomPainter {
 }
 
 extension ColorOpacity on Color {
-    Color withColorOpacity(double opacity) => withValues(alpha: opacity * 255);
+    Color withColorOpacity(double opacity) => withOpacity(opacity);
 }
