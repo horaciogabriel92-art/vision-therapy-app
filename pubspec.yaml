@@ -30,7 +30,7 @@ dependencies:
 
   # Vision & Camera (The "Magic")
   camera: ^0.10.5+9
-  google_mlkit_face_detection: ^0.10.0 # Standard robusto para landmarks
+  google_mlkit_face_mesh: ^0.1.0 # High-precision 468 landmarks for Iris Tracking
   permission_handler: ^11.3.0 # Gestión de permisos en tiempo real
   vector_math: ^2.1.4 # Matemáticas 3D para vectores de mirada
 

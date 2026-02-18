@@ -1,6 +1,6 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
-import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
+import 'package:google_mlkit_face_mesh/google_mlkit_face_mesh.dart';
 import 'package:flutter/services.dart';
 import 'camera_utils.dart';
 import 'vision_analyzer_service.dart';
@@ -11,14 +11,11 @@ class VisionService {
   VisionService._internal();
 
   CameraController? _cameraController;
-  // Face Detection (con Contours/Landmarks activados)
-  final FaceDetector _faceDetector = FaceDetector(
-    options: FaceDetectorOptions(
-      enableContours: true,
-      enableLandmarks: true,
-      enableClassification: true, // Para ojos abiertos/cerrados
-      performanceMode: FaceDetectorMode.fast,
-    ),
+  
+  // FACE MESH DETECTOR (The Upgrade)
+  // Replaces FaceDetector to provide 468 points
+  final FaceMeshDetector _meshDetector = FaceMeshDetector(
+      option: FaceMeshDetectorOptions.faceMesh
   );
   
   bool _isProcessing = false;
@@ -67,28 +64,30 @@ class VisionService {
   Future<void> _processImage(CameraImage image) async {
     if (_cameraController == null) return;
     
+    // Note: CameraUtils might need update if FaceMesh expects a diff format? 
+    // Usually InputImage is standard.
     final InputImage? inputImage = CameraUtils.convert(image, _cameraController!.description);
     if (inputImage == null) return;
 
     try {
-      final List<Face> faces = await _faceDetector.processImage(inputImage);
+      final List<FaceMesh> meshes = await _meshDetector.processImage(inputImage);
       
-      if (faces.isNotEmpty) {
-        final face = faces.first;
+      if (meshes.isNotEmpty) {
+        final mesh = meshes.first;
         final Size imageSize = Size(image.width.toDouble(), image.height.toDouble());
         
-        final measurement = _analyzer.analyzeFrame(face, imageSize);
+        final measurement = _analyzer.analyzeFrame(mesh, imageSize);
         if (measurement != null && onMeasurementCalculated != null) {
           onMeasurementCalculated!(measurement);
         }
       }
     } catch (e) {
-      debugPrint("FaceDetection Error: $e");
+      debugPrint("FaceMesh Error: $e");
     }
   }
 
   void dispose() {
     _cameraController?.dispose();
-    _faceDetector.close();
+    _meshDetector.close();
   }
 }
