@@ -27,62 +27,101 @@ class ClinicalMeasurement {
 }
 
 class VisionAnalyzerService {
-  // Canonical Face Mesh Indices (468/473 are Iris centers in dense mesh)
-  // If not available, we use average of eye corners
-  static const int LEFT_IRIS_IDX = 468;
-  static const int RIGHT_IRIS_IDX = 473;
-  
+  // Canonical Face Mesh Indices
+  static const int LEFT_IRIS_CENTER = 468;
+  static const int RIGHT_IRIS_CENTER = 473;
   static const double STRABISMUS_THRESHOLD = 8.0;
 
   ClinicalMeasurement? analyzeFrame(FaceMesh mesh, Size imageSize) {
     // 1. Validate Mesh
     // We expect 468 points minimum.
-    // google_mlkit_face_mesh usually exposes a List<FaceMeshPoint> named 'points' or similar.
-    // If not, we might need to rely on 'contours'.
+    // In google_mlkit_face_mesh ^0.0.2+, the property is 'points'.
+    // We access it directly. 
     
-    // Assuming .points is available as a flat list
-    // If points < 468, we can't do iris tracking.
+    // Note: If the plugin version is very new, it might use specific getters.
+    // Based on standard usage:
+    List<FaceMeshPoint> points = mesh.points;
     
-    // Note: Since I cannot check the API docs, I'll add a safety check.
-    // If compilation fails on '.points', I will use contours in the fix.
+    // Fallback/Safety
+    if (points.isEmpty) return null;
+
+    // 2. Extract Key Landmarks
+    // Left Eye (33: Inner, 133: Outer, 468: Iris)
+    final p33 = _getPoint(points, 33);
+    final p133 = _getPoint(points, 133);
+    final pLeftIris = _getPoint(points, 468);
     
-    // For now:
-    // final points = mesh.points;
+    // Right Eye (362: Inner, 263: Outer, 473: Iris)
+    final p362 = _getPoint(points, 362);
+    final p263 = _getPoint(points, 263);
+    final pRightIris = _getPoint(points, 473);
+
+    // If we miss any crucial point (e.g. occlusion), abort
+    if (p33 == null || p133 == null || pLeftIris == null || 
+        p362 == null || p263 == null || pRightIris == null) {
+      return null;
+    }
+
+    // 3. Coordinate Conversion
+    // We use raw coordinates for vector calculation relative to eye center.
+    final leftCenter = _midPoint(p33, p133);
+    final rightCenter = _midPoint(p362, p263);
     
-    // To be safe against compilation errors if .points doesn't exist in v0.0.1:
-    // I will try to use the most common ML Kit pattern.
+    // 4. Calculate Gaze Vectors (Iris relative to Eye Center)
+    // Vector = Iris - Center
+    final leftGazeRaw = vector.Vector3(
+      (pLeftIris.x - leftCenter.x).toDouble(),
+      (pLeftIris.y - leftCenter.y).toDouble(),
+      0 
+    );
     
-    // Let's assume we have to calculate from contours if points aren't direct.
-    // BUT user specifically complained about no eye tracking.
+    final rightGazeRaw = vector.Vector3(
+      (pRightIris.x - rightCenter.x).toDouble(),
+      (pRightIris.y - rightCenter.y).toDouble(),
+      0
+    );
     
-    // Placeholder logic for compilation + "Eye Center" estimation from bounding box as a robust fallback
-    // while we wait to verify the API.
+    // Normalize Vectors
+    final leftGaze = leftGazeRaw.normalized();
+    final rightGaze = rightGazeRaw.normalized();
     
+    // 5. Calculate Convergence Angle (Simplified horizontal disparity)
+    // Positive = Crossed (Esotropia), Negative = Divergent (Exotropia)
+    // Scale factor 100 is empirical to map pixel-disparity to rough degrees.
+    // Needs calibration offset in real usage.
+    double rawConvergence = (leftGaze.x - rightGaze.x) * 100; 
+
     final timestamp = DateTime.now().millisecondsSinceEpoch;
-    
-    // Estimate centers from BoundingBox (Rough approximation)
-    final rect = mesh.boundingBox;
-    final faceCenter = vector.Vector3(rect.center.dx, rect.center.dy, 0);
-    
-    // In a real Mesh, we would do:
-    // final leftIris = mesh.points[468]; 
-    
-    // For this step, I will calculate "Gaze" based on head rotation if available?
-    // FaceMesh object usually doesn't give EulerX/Y/Z directly like Face object.
-    // We have to calculate pose from landmarks (PnP problem) or it might be exposed.
-    
-    // Let's assume for this specific compilation pass that we return a dummy measurement
-    // but correctly typed, so I can fix VisionService.
-    
+
     return ClinicalMeasurement(
        timestamp: timestamp,
-       leftPupil: math.Point(0,0),
-       rightPupil: math.Point(0,0),
-       leftGazeVector: vector.Vector3(0,0,1),
-       rightGazeVector: vector.Vector3(0,0,1),
-       convergenceAngle: 0.0,
-       isFusing: true,
-       headPose: vector.Vector3(0,0,0)
+       leftPupil: math.Point(pLeftIris.x.toInt(), pLeftIris.y.toInt()),
+       rightPupil: math.Point(pRightIris.x.toInt(), pRightIris.y.toInt()),
+       leftGazeVector: leftGaze,
+       rightGazeVector: rightGaze,
+       convergenceAngle: rawConvergence,
+       isFusing: rawConvergence.abs() < STRABISMUS_THRESHOLD,
+       headPose: vector.Vector3(0,0,0) // FaceMesh implies head pose but requires PnP solver
+    );
+  }
+
+  // Helpers
+  FaceMeshPoint? _getPoint(List<FaceMeshPoint> points, int index) {
+    if (index < points.length && points[index].index == index) {
+      return points[index];
+    }
+    // Search path (safe)
+    try {
+      return points.firstWhere((p) => p.index == index);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  math.Point<double> _midPoint(FaceMeshPoint a, FaceMeshPoint b) {
+    return math.Point<double>(
+      (a.x + b.x) / 2,
+      (a.y + b.y) / 2
     );
   }
 }
