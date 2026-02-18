@@ -32,6 +32,7 @@ dependencies:
   camera: ^0.10.5+9
   google_mlkit_face_detection: ^0.10.0 # Standard robusto para landmarks
   permission_handler: ^11.3.0 # Gestión de permisos en tiempo real
+  vector_math: ^2.1.4 # Matemáticas 3D para vectores de mirada
 
   # Game Engine (Gravity Catch)
   flame: ^1.16.0 
