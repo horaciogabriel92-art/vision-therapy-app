@@ -1,4 +1,4 @@
-funciono malditaseaaa el app release que se esta deallprojects {
+allprojects {
     repositories {
         google()
         mavenCentral()
