@@ -1,6 +1,6 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
-import 'package:google_mlkit_face_mesh/google_mlkit_face_mesh.dart';
+import 'package:google_mlkit_face_mesh_detection/google_mlkit_face_mesh_detection.dart';
 import 'package:flutter/services.dart';
 import 'camera_utils.dart';
 import 'vision_analyzer_service.dart';

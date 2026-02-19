@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 import 'dart:ui';
-import 'package:google_mlkit_face_mesh/google_mlkit_face_mesh.dart';
+import 'package:google_mlkit_face_mesh_detection/google_mlkit_face_mesh_detection.dart';
 import 'package:vector_math/vector_math_64.dart' as vector;
 
 /// Port of Python's ClinicalMeasurement data class
