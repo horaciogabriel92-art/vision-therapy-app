@@ -1,6 +1,7 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_mlkit_face_mesh_detection/google_mlkit_face_mesh_detection.dart';
+import 'package:google_mlkit_commons/google_mlkit_commons.dart'; // Explicit import for InputImage
 import 'package:flutter/services.dart';
 import 'camera_utils.dart';
 import 'vision_analyzer_service.dart';
