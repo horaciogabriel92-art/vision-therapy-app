@@ -2,7 +2,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:vision_therapy_app/core/theme/app_theme.dart';
 import 'package:vision_therapy_app/core/vision/vision_service.dart';
-import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
+// import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart'; // REMOVED
 import 'package:permission_handler/permission_handler.dart';
 import 'package:vision_therapy_app/core/vision/vision_analyzer_service.dart';
 import 'dart:async';
